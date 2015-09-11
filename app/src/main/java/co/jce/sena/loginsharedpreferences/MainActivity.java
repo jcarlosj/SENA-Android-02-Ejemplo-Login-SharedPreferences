@@ -144,8 +144,8 @@ public class MainActivity extends AppCompatActivity implements View .OnClickList
             limpiarCampos();
             datosRecordados();          //: Datos almacenados como preferencias compartidas.
 
-            //in = new Intent( this , PanelActivity.class );
-            //startActivity( in );
+            in = new Intent( this , PanelActivity.class );
+            startActivity( in );
         }
 
     }
