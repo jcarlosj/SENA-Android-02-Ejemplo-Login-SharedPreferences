@@ -23,9 +23,12 @@ public class MainActivity extends AppCompatActivity implements View .OnClickList
     //-> Atributos (Comunes)
     private String vNumeroCedula,
                    vContrasena;
+    private boolean estaGuardo = false;
 
     //-> Atributos (Constantes)
-    private final static String GUARDADO = "guardado";
+    private final static String ID_USUARIO = "id_usuario",
+                                CLAVE_USUARIO = "clave_usuario",
+                                GUARDADO = "guardado";
 
     //-> Atributos (Especiales)
     private SharedPreferences spSesion;
@@ -86,10 +89,35 @@ public class MainActivity extends AppCompatActivity implements View .OnClickList
         btnIngresar .setOnClickListener( this );
     }
 
+    private void guardarPreferencias( String idUsuario, String contrasena ) {
+        spEditorSession .putString( ID_USUARIO, idUsuario );
+        spEditorSession .putString( CLAVE_USUARIO, contrasena );
+        spEditorSession .putBoolean( GUARDADO, estaGuardo );
+        spEditorSession .commit();
+    }
+
+    private void validarCheckBoxRecordar() {
+
+        if( cbRecordar .isChecked() ) {
+            guardarPreferencias( vNumeroCedula, vContrasena );
+            estaGuardo = true;
+            Toast .makeText( this, "Datos guardados como preferencias compartidas", Toast .LENGTH_SHORT ) .show();
+        }
+        else {
+            spEditorSession .clear();
+            spEditorSession .commit();
+            estaGuardo = false;
+            Toast .makeText( this, "Datos eliminados de las preferencias compartidas", Toast .LENGTH_SHORT ) .show();
+        }
+
+    }
+
     private void extraerValores() {
         //-> Extraer los valores de los componentes del "Activity"
         vNumeroCedula = etNumeroCedula .getText() .toString();
         vContrasena = etContrasena .getText() .toString();
+        validarCheckBoxRecordar();
+
         Toast .makeText( this, "Valores extraidos son:\n" + vNumeroCedula + " / " + vContrasena, Toast .LENGTH_SHORT ) .show();
     }
 
