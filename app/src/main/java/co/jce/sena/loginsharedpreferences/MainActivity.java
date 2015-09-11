@@ -41,13 +41,15 @@ public class MainActivity extends AppCompatActivity implements View .OnClickList
         setContentView(R.layout.activity_main);
         init();
 
+        //-> Asignamos el valor del estado de GUARDADO de preferencias compartidas.
+        estaGuardo = spSesion .getBoolean( GUARDADO, false );
         //-> Valida si al iniciar el "Activity" hay valores guardados
         //   como datos de preferencia compartida o "SharedPreferences"
-        if( spSesion .getBoolean( GUARDADO, false ) ) {
+        if( estaGuardo ) {
             Toast .makeText( MainActivity .this, "LLenar los campos", Toast .LENGTH_SHORT) .show();
         }
         else {
-            Toast .makeText( MainActivity .this, "Limpiar los campos", Toast .LENGTH_SHORT) .show();
+            limpiarCampos();
         }
     }
 
@@ -86,13 +88,25 @@ public class MainActivity extends AppCompatActivity implements View .OnClickList
         btnIngresar = ( Button ) findViewById( R .id .btnIngresar );
 
         //-> Asignamos un manejador de Eventos al botón (Ingresar)
-        btnIngresar .setOnClickListener( this );
+        btnIngresar .setOnClickListener(this);
+    }
+
+    private void limpiarCampos() {
+        etNumeroCedula .setText( "" );
+        etContrasena .setText( "" );
+        Toast .makeText( MainActivity .this, "Limpió los campos", Toast .LENGTH_SHORT) .show();
+    }
+
+    private void datosRecordados() {
+        vNumeroCedula = spSesion .getString( ID_USUARIO, "" );
+        vContrasena = spSesion .getString( CLAVE_USUARIO, "" );
+        Toast .makeText( MainActivity .this, "Datos recordados: \n" + vNumeroCedula + " / " + vContrasena, Toast .LENGTH_SHORT) .show();
     }
 
     private void guardarPreferencias( String idUsuario, String contrasena ) {
         spEditorSession .putString( ID_USUARIO, idUsuario );
         spEditorSession .putString( CLAVE_USUARIO, contrasena );
-        spEditorSession .putBoolean( GUARDADO, estaGuardo );
+        spEditorSession .putBoolean(GUARDADO, estaGuardo );
         spEditorSession .commit();
     }
 
@@ -107,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements View .OnClickList
             spEditorSession .clear();
             spEditorSession .commit();
             estaGuardo = false;
+
             Toast .makeText( this, "Datos eliminados de las preferencias compartidas", Toast .LENGTH_SHORT ) .show();
         }
 
@@ -116,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements View .OnClickList
         //-> Extraer los valores de los componentes del "Activity"
         vNumeroCedula = etNumeroCedula .getText() .toString();
         vContrasena = etContrasena .getText() .toString();
-        validarCheckBoxRecordar();
 
         Toast .makeText( this, "Valores extraidos son:\n" + vNumeroCedula + " / " + vContrasena, Toast .LENGTH_SHORT ) .show();
     }
@@ -126,8 +140,12 @@ public class MainActivity extends AppCompatActivity implements View .OnClickList
 
         if( v .getId() == R .id .btnIngresar ) {
             extraerValores();
-            in = new Intent( this , PanelActivity.class );
-            startActivity( in );
+            validarCheckBoxRecordar();  //: Al validar realiza o no las acciones.
+            limpiarCampos();
+            datosRecordados();          //: Datos almacenados como preferencias compartidas.
+
+            //in = new Intent( this , PanelActivity.class );
+            //startActivity( in );
         }
 
     }
